@@ -1,6 +1,4 @@
-
-![smoochieeBLEheaderIMG](https://github.com/smoochiee/Ble-jammer/assets/30816448/8c160045-5e4c-4ad4-ae91-471beade94ba)
-
+![image alt](
 
  
  **WARNING!!! JAMMING IS ILLEGAL**
