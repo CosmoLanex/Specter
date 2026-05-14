@@ -1,3 +1,18 @@
+/*
+ * ════════════════════════════════════════════════════════════
+ *  ESP1 — SCAN & ALERT WORKER  "NUKRAX" v3.0
+ *  Does ALL scanning (WiFi, BLE, NRF24) and alert broadcasting
+ *  Reports everything back to ESP2 via UART
+ * ════════════════════════════════════════════════════════════
+ *  NRF24 no1 (HSPI): SCK=14 MISO=12 MOSI=13 CS=15 CE=16
+ *  NRF24 no2 (VSPI): SCK=18 MISO=19 MOSI=23 CS=21 CE=22
+ *  UART to ESP2:      TX=GPIO17 → ESP2 RX=GPIO17
+ *                     RX=GPIO32 ← ESP2 TX=GPIO32
+ *                     Shared GND mandatory
+ * ════════════════════════════════════════════════════════════
+ */
+
+
 #include "RF24.h"
 #include <SPI.h>
 #include <ezButton.h>
