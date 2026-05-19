@@ -1,0 +1,47 @@
+## ESP2 Libraries
+
+| Library              | Install Name               | Where to find                |
+|----------------------|----------------------------|------------------------------|
+| Adafruit SSD1306     | `Adafruit SSD1306`         | Arduino Library Manager      |
+| Adafruit GFX         | `Adafruit GFX Library`     | Arduino Library Manager      |
+
+---
+
+## ESP1 Libraries
+
+| Library              | Install Name                          | Where to find                |
+|----------------------|---------------------------------------|------------------------------|
+| RF24                 | `RF24` by TMRh20                      | Arduino Library Manager      |
+| ezButton             | `ezButton` by ArduinoGetStarted       | Arduino Library Manager      |
+
+---
+
+## Already built-in (no install needed)
+
+| Library                  | Comes with                |
+|--------------------------|---------------------------|
+| WiFi                     | ESP32 board package       |
+| BLEDevice / BLEScan      | ESP32 board package       |
+| SPI                      | ESP32 board package       |
+| Wire (I2C)               | ESP32 board package       |
+| esp_bt.h                 | ESP32 board package       |
+| esp_wifi.h               | ESP32 board package       |
+
+---
+
+## How to install
+
+1. Open **Arduino IDE**
+2. Go to **Sketch → Include Library → Manage Libraries**
+3. Search each library name exactly as written above
+4. Click **Install**
+
+---
+
+## ESP32 Board Package (if not already installed)
+
+1. Go to **File → Preferences**
+2. Add this URL in Additional Boards Manager URLs:
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+3. Go to **Tools → Board → Boards Manager**
+4. Search **esp32** and install **esp32 by Espressif Systems**
