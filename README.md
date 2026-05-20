@@ -1,176 +1,367 @@
-![image alt](
+<div align="center">
 
- 
- **WARNING!!! JAMMING IS ILLEGAL**
- ---
-# FOR UPDATED CODES AND FEATURE GO HERE [NOISY BOY](https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer)
-https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer
+<img src="https://github.com/CosmoLanex/Specter/blob/main/assets/lg.png?raw=true" width="600"/>
 
-# WHAT DOES IT DO?
+# SPECTER
+### 2.4 GHz RF Intelligence System
 
-**IT CREATES NOISE SIGNAL TO JAM BLUETOOTH AND WIFI USING NRF24L01 AND ESP32 IN RANGE 2.4GHZ DEVICES , EFFECTS MAY VARY DEPENDS ON DEVICE BLUETOOTH VERSIONS **
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
+[![Platform: ESP32](https://img.shields.io/badge/Platform-ESP32-blue.svg)](https://www.espressif.com/)
+[![Framework: Arduino](https://img.shields.io/badge/Framework-Arduino-teal.svg)](https://www.arduino.cc/)
+[![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen.svg)]()
+[![Made in India](https://img.shields.io/badge/Made%20in-India-orange.svg)]()
 
+> **NUKRAX v3.0** — A dual-ESP32 RF intelligence platform featuring 2.4 GHz spectrum scanning, WiFi/BLE surveillance, proximity alerting and active RF disruption via twin NRF24L01+PA/LNA modules.
 
-`NOT TESTED ON 2.4GHZ DRONE I DONT HAVE ONE BUT IT CAN JAM ONE..... MAYBE?` 
----
-
-
----
-## REQUIRED DEVICE AND MODULE:
-1. `1pc OR 2pcs NRF24`
-- ![nrf24l01](https://github.com/smoochiee/Ble-jammer/assets/30816448/c370e76d-d518-409a-ba87-cb087183958c)
-
-2. `1pc ESP32` NOTE... YOU CAN USE A `NANO OR MICRO` BUT ESP32 ARE CHEAP ALMOST SAME PRICE AS `ARDUINOS`...LOL
-- ![esp32](https://github.com/smoochiee/Ble-jammer/assets/30816448/840c5d23-a6cd-4c9b-90b5-911c3d29d8e4)
-
-
-3. `10UF-100UF CAPACITOR DEPEND ON YOUR NRF` 
-- ![capacitor](https://github.com/smoochiee/Ble-jammer/assets/30816448/7165fcb1-bb05-4aa4-8dee-5640118b2673)
-
-4.` 1 DIP SWITCH` (OPTIONAL IF YOU WANT TO USE DIFFERENT PATTERN OF CHANNEL HOPPING)
-- ![DIP](https://github.com/smoochiee/Ble-jammer/assets/30816448/cec3ed8d-6db0-4c9a-9d20-de72abbf9c58)
-
+**Developed by [@CosmoLanex](https://github.com/CosmoLanex)**
 
 ---
 
+[🔍 Features](#features) · [🔧 Hardware](#hardware) · [📡 Circuit Diagram](#circuit-diagram) · [💾 Installation](#installation) · [🎮 Usage](#usage) · [📁 Repository](#repository-structure) · [❤️ Support](#support-the-creator)
 
- ## PINS TO ATTACH NRF24L01 TO ESP32
-
-### FOR DUAL/TWO NRF24L01 
-+ ` HSPI= SCK = 14, MISO = 12, MOSI = 13, CS = 15 , CE = 16`
-+ ` VSPI= SCK = 18, MISO =19, MOSI = 23 ,CS =21 ,CE = 22`
-
-### FOR SINGLE/ONE NRF24L01 YOU CAN CHOOSE BETWEEN HSPI OR VSPI 
- - `VSPI= SCK = 18, MISO =19, MOSI = 23 ,CS =21 ,CE = 22`
-- `HSPI= SCK = 14, MISO = 12, MOSI = 13, CS = 15 , CE = 16` 
-
-### SWITCH PIN (OPTIONAL)
-- `PIN 33 OF YOUR ESP32 `
----
-## WIRING DIAGRAM
-
-
-### NRF24L01 PINS
-- ![NRF24L01 PIN](https://github.com/smoochiee/Ble-jammer/assets/30816448/e41779d4-565a-4044-9b88-c0acbea0e93e)
-
-### ESP32 PINS WHERE YOU ATTACH YOUR `NRF24` AND `SWITCH `
-- ![32](https://github.com/smoochiee/Ble-jammer/assets/30816448/ba7c2991-1542-4296-8b8c-8011c2bc8e77)
-
-
-
-
-### HOW YOU ATTACH CAPACITOR LOOK OUT FOR POLAROITY SIGNS `- +`
-- ![NRF24 CAPACITOR](https://github.com/smoochiee/Ble-jammer/assets/30816448/bf24b643-7b70-4d73-962a-38fa0bffe30f)
-
-
---- 
-
-## UPLOADING CODE TO ESP32
-
-- ` WEBFLASHER `INSTALLER FOR EASY UPLOAD CODE ON ESP32 NO NEED TO DOWNLOAD INO FILE (USE CHROME OR MICROSOFT BROWSER)
-
-- https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer newer code
-- # FOR UPDATED CODES AND FEATURE GO HERE [NOISY BOY](https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer)
-https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer
-
-- 
-
- [REMOVE FLASHER](https://github.com/smoochiee/Noisy-boy-esp32-Bluetooth-jammer)
-
+</div>
 
 ---
 
+## ⚠️ Disclaimer
 
-## DEMO
-
-
-+ **TESTED 10 METERS ON BLUETOOTH 5.0 AND WORKS GREAT**
-+ **TESTED 10 METERS ON NEWER BLUETOOTH 5.3 WORKING DEPENDS BETWEEN THE GAP OF BLUETOOTH DEVICE AND PHONE**
-+ + **IF YOU WANT BETTER PERFORMANCE YOU CAN ADD 2.4GHZ RF AMPLIFIER** 
-
-- https://github.com/smoochiee/Ble-jammer/assets/30816448/16f0c1f8-6f23-4cca-a352-f6ff64fe5a90
+This project is developed for **educational and research purposes only**. The RF disruption feature (JR.IO) transmits a constant 2.4 GHz carrier wave and may interfere with WiFi, Bluetooth, and other 2.4 GHz communications in the vicinity. Usage of such functionality may be **regulated or illegal in your jurisdiction**. The developer assumes no responsibility for misuse. Always operate within the bounds of your local laws and regulations.
 
 ---
 
-## COMPILING USING IDE (IF YOUR NOT USING WEBFLASHER)
+## Overview
 
-* DOWNLOAD LIBRARIES YOU NEED AND INSTALL [RF24 LIBRARY](https://github.com/nRF24/RF24) AND [EZBUTTON LIBRARY](https://arduinogetstarted.com/tutorials/arduino-button-library)
-* DOWLOAD CODE [INO FILE](https://github.com/smoochiee/Ble-jammer/tree/main/INO)
+**Specter** is a dual-ESP32 RF intelligence platform built around two ESP32-WROOM-32 modules and a pair of NRF24L01+PA/LNA transceiver modules. The system provides a fully self-contained handheld interface — controlled via three push buttons and a 0.96" OLED display — capable of:
+
+- Scanning and displaying nearby **WiFi networks** with SSID, RSSI, channel and encryption
+- Scanning nearby **Bluetooth Low Energy (BLE)** devices
+- Performing a **passive 2.4 GHz spectrum sweep** across all 126 NRF24 channels simultaneously using two radios
+- Broadcasting **custom alert messages** to all nearby devices via WiFi SSID and BLE beacon — no connection required
+- Running **JR.IO**, a dual-radio 2.4 GHz constant-carrier disruptor in sweep or random-hop mode
+
+The system is split across two ESP32s: **ESP1** handles all RF work (NRF24 scanning, WiFi scan, BLE scan, alerts, JR.IO) and **ESP2** handles the user interface (OLED display, buttons, menu navigation). They communicate over a direct hardware UART link.
 
 ---
 
+## Features
 
-## SOME NOTES
+### 🎬 NUKRAX Boot Sequence
+A high-tech 4-phase glitch animation plays on boot:
+- **Static burst** — random noise fills the screen
+- **Text emergence** — "NUKRAX" glitches in through noise
+- **Active glitch hold** — HUD corner markers, scan lines, blinking cursor, subtitle flicker
+- **Dissolve out** — text breaks apart, screen wipes to black
 
-* NRF24 CAN DO 125 CHANNELS YOU CAN EDIT IT IN CODE
-- BLUETOOTH CLASSIC 80 CHANNELS
-+ BLE USES 40 CHANNELS
-* WIFI USES 1-14 CHANNELS
-* DRONE 2.4GHZ 1-125 SO YOU NEED TO EDIT CODE TO HOPE 125 CHANNELS
-* YOU CAN EDIT PAYLOAD SIZE DIRECTLY ON RF24 LIBRARY  `RF24.CPP LINE # 1972`
+### 📡 JR.IO — 2.4 GHz Disruptor *(Main Feature)*
+- Both NRF24L01+PA/LNA modules output a **continuous unmodulated 2.4 GHz carrier** at maximum power (+20 dBm)
+- **Slide switch** on ESP1 selects mode live — no restart needed:
+  - `Switch HIGH` → **Sweep mode** — HSPI sweeps ±2 channels, VSPI sweeps ±4, staggered for maximum band coverage
+  - `Switch LOW` → **Random hop** — both radios jump to independent random channels every ~60 µs
+- Runs in a **zero-delay tight loop** for maximum disruption efficiency
+
+### 📶 WiFi Scanner
+- Scans all nearby networks including **hidden SSIDs**
+- Displays SSID, channel, RSSI in dBm, encryption status, BSSID
+- Results sorted by signal strength
+- Scrollable list with detail view
+
+### 🔵 BLE Scanner
+- 6-second passive BLE advertisement scan
+- Displays device name, MAC address, RSSI
+- Identifies unnamed advertisement-only devices
+
+### 📊 NRF24 Spectrum Analyser
+- Both NRF24 radios sweep simultaneously — HSPI covers channels 0–62, VSPI covers 63–125
+- Full 2.4 GHz band visualised as a **bar graph spectrum** on OLED
+- WiFi channel 1, 6, 11 marked on spectrum display
+- Pannable view with UP/DOWN buttons
+
+### 🚨 Alert System — No Connection Required
+Sends alert messages to ALL nearby devices automatically:
+
+| Method | How it reaches phones | Range |
+|---|---|---|
+| **WiFi SSID Only** | Alert message IS the WiFi network name — visible in every phone's WiFi list | ~100m |
+| **BLE Beacon Only** | Alert message IS the BLE device name — broadcasts 50 packets/sec | ~50m |
+| **Blast All** | Both simultaneously at maximum TX power | ~100m |
+
+Custom messages can be composed character by character on the device itself.
+
+---
+
+## Hardware
+
+### Components Required
+
+| Component | Quantity | Notes |
+|---|---|---|
+| ESP32-WROOM-32 Dev Module | 2 | Any standard ESP32 dev board |
+| NRF24L01+PA/LNA Module | 2 | Must be PA/LNA version for maximum range |
+| 0.96" I2C OLED Display (SSD1306) | 1 | 4-pin I2C, 128×64, connected to ESP2 |
+| Push Button | 3 | UP, DOWN, MIDDLE — 6×6mm tactile |
+| Slide Switch | 1 | 3-pin, connected to ESP1 GPIO33 |
+| Jumper Wires | — | Male-to-male and male-to-female |
+| Breadboard or PCB | — | For assembly |
+| 100µF Capacitors | 2 | One per NRF24 module for power stability |
+
+### NRF24L01+PA/LNA Module
+<img src="https://github.com/CosmoLanex/Specter/blob/main/assets/nrf24l01.jpg?raw=true" width="300"/>
+
+> ⚠️ **Important:** Use the PA/LNA version (with external antenna), not the basic onboard-antenna version. The 100µF capacitor across VCC/GND of each module is strongly recommended to prevent brown-out resets.
+
+### ESP32-WROOM-32
+The project uses two standard ESP32-WROOM-32 dev modules. Any 38-pin ESP32 dev board with the standard pinout works.
+
+### 0.96" OLED Display
+4-pin I2C SSD1306 module. Blue or white color — both work identically with the code.
+
+---
+
+## Circuit Diagram
+
+### Full Circuit
+[![Circuit Diagram](https://github.com/CosmoLanex/Specter/blob/f79d2e7878d860163c0b8690aaf28b992a85a15c/circuit-diagram/main-c.d.png?raw=true)](https://app.cirkitdesigner.com/project/870d9182-9367-47eb-bef0-2a379b8e2756)
+
+> 🔗 **Interactive circuit diagram:** [Open in Cirkit Designer](https://app.cirkitdesigner.com/project/870d9182-9367-47eb-bef0-2a379b8e2756)
+
+---
+
+### ESP1 Pinout
+
+| Pin | Connection |
+|---|---|
+| GPIO 14 | NRF24 #1 SCK (HSPI) |
+| GPIO 12 | NRF24 #1 MISO (HSPI) |
+| GPIO 13 | NRF24 #1 MOSI (HSPI) |
+| GPIO 15 | NRF24 #1 CS (HSPI) |
+| GPIO 16 | NRF24 #1 CE (HSPI) |
+| GPIO 18 | NRF24 #2 SCK (VSPI) |
+| GPIO 19 | NRF24 #2 MISO (VSPI) |
+| GPIO 23 | NRF24 #2 MOSI (VSPI) |
+| GPIO 21 | NRF24 #2 CS (VSPI) |
+| GPIO 22 | NRF24 #2 CE (VSPI) |
+| GPIO 33 | Slide Switch |
+| GPIO 17 | UART TX → ESP2 RX |
+| GPIO 32 | UART RX ← ESP2 TX |
+
+### ESP2 Pinout
+
+| Pin | Connection |
+|---|---|
+| GPIO 4 | OLED SDA |
+| GPIO 5 | OLED SCL |
+| GPIO 25 | Button UP |
+| GPIO 27 | Button DOWN |
+| GPIO 26 | Button MIDDLE (SELECT) |
+| GPIO 32 | UART TX → ESP1 RX |
+| GPIO 17 | UART RX ← ESP1 TX |
+
+### UART Cross-Wiring
 ```
-/****************************************************************************/
-void RF24::startConstCarrier(rf24_pa_dbm_e level, uint8_t channel)
-{
-    stopListening();
-    write_register(RF_SETUP, read_register(RF_SETUP) | _BV(CONT_WAVE) | _BV(PLL_LOCK));
-    if (isPVariant()) {
-        setAutoAck(0);
-        setRetries(0, 0);
-        uint8_t dummy_buf[5];
-        for (uint8_t i = 0; i < 5; ++i)
-            dummy_buf[i] = 0x00;
-
-        // use write_register() instead of openWritingPipe() to bypass
-        // truncation of the address with the current RF24::addr_width value
-        write_register(TX_ADDR, reinterpret_cast<uint8_t*>(&dummy_buf), 5);
-        flush_tx(); // so we can write to top level
-
-        // use write_register() instead of write_payload() to bypass
-        // truncation of the payload with the current RF24::payload_size value
-        write_register(W_TX_PAYLOAD, reinterpret_cast<const uint8_t*>(&dummy_buf), 5);
-
-        disableCRC();
-    }
-    setPALevel(level);
-    setChannel(channel);
-    IF_SERIAL_DEBUG(printf_P(PSTR("RF_SETUP=%02x\r\n"), read_register(RF_SETUP)));
-    ce(HIGH);
-    if (isPVariant()) {
-        delay(1); // datasheet says 1 ms is ok in this instance
-        ce(LOW);
-        reUseTX();
-    }
-}
-
-/****************************************************************************/
-
+ESP1 GPIO17 (TX) ────────→ ESP2 GPIO17 (RX)
+ESP2 GPIO32 (TX) ────────→ ESP1 GPIO32 (RX)
+ESP1 GND         ──────── ESP2 GND   ← mandatory
 ```
 
+---
 
+## Installation
 
+### 1. Install Arduino IDE
+Download and install [Arduino IDE 1.8.x or 2.x](https://www.arduino.cc/en/software)
 
+### 2. Install ESP32 Board Package
+1. Open Arduino IDE → **File → Preferences**
+2. Add to Additional Boards Manager URLs:
+```
+https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+```
+3. Go to **Tools → Board → Boards Manager**
+4. Search `esp32` and install **esp32 by Espressif Systems**
 
+### 3. Install Required Libraries
+
+Open **Sketch → Include Library → Manage Libraries** and install:
+
+| Library | Author | For |
+|---|---|---|
+| `Adafruit SSD1306` | Adafruit | OLED display (ESP2) |
+| `Adafruit GFX Library` | Adafruit | OLED graphics (ESP2) |
+| `RF24` | TMRh20 | NRF24L01 modules (ESP1) |
+| `ezButton` | ArduinoGetStarted | Slide switch (ESP1) |
+
+> WiFi, BLE, SPI, Wire are built into the ESP32 board package — no installation needed.
+
+### 4. Flash ESP1
+1. Open `specter-flash-ino/esp1_worker.ino`
+2. Select **Tools → Board → ESP32 Dev Module**
+3. Set **Tools → Partition Scheme → Huge APP (3MB No OTA/1MB SPIFFS)**
+4. Select the correct COM port
+5. Click Upload
+6. Open Serial Monitor at 115200 baud — confirm `HP Started !!!` and `SP Started !!!`
+
+### 5. Flash ESP2
+1. Open `specter-flash-ino/esp2_controller.ino`
+2. Select **Tools → Board → ESP32 Dev Module**
+3. Select the correct COM port
+4. Click Upload
 
 ---
-IF YOU DO MODIFY CODES OR MAKE IT YOUR OWN PLEASE DO CREDITS FROM OWNER.NOT ACT LIKE YOU OWN...A THANKS OR DONATIONS WOULD BE NICE...to whom claiming they wrote the codes Do note that its already a working code. when you wrote it from scratch..lol..😂
+
+## Usage
+
+### Boot
+Power on both ESPs. The OLED on ESP2 displays the **NUKRAX glitch animation** for ~4 seconds then the main menu appears.
+
+### Navigation
+
+| Button | Action |
+|---|---|
+| UP | Move cursor up / scroll list up / cycle character |
+| DOWN | Move cursor down / scroll list down / cycle character |
+| MIDDLE (short press) | Select / confirm / activate |
+| MIDDLE (hold 1s) | Go back to previous screen |
+
+### Main Menu
+
+```
+> JR.IO MODE    ← Main feature
+  WIFI  SCAN
+  BLE   SCAN
+  NRF   SCAN
+  ALERT MODE
+```
+
+### JR.IO Mode
+1. Select `JR.IO MODE` → press MIDDLE to activate
+2. Both NRF24 radios start constant carrier at MAX power
+3. **Slide switch on ESP1** controls mode:
+   - `HIGH (open)` = Sweep — staggered channel sweep
+   - `LOW (GND)` = Random — random channel hop every ~60µs
+4. Press MIDDLE to stop
+
+### WiFi / BLE / NRF Scan
+1. Select scan type → press MIDDLE to activate
+2. Scanning animation plays while ESP1 works
+3. Results appear — UP/DOWN scrolls, MIDDLE opens action menu
+4. Action menu: **Scan Again / Deactivate / Back to Menu**
+
+### Alert Mode
+1. Select `ALERT MODE` → press MIDDLE
+2. Choose: **Preset Message** or **Custom Message**
+3. Choose method: **WiFi SSID / BLE Beacon / Blast All**
+4. Press MIDDLE to launch — alert broadcasts automatically
+5. Press MIDDLE to stop
+
 ---
-# DONATION
-**If you like you can donate to MY PAYPAL ACCOUNT :**
 
+## Repository Structure
 
-[PAYPAL](https://paypal.me/smoochieelee?country.x=PH&locale.x=en_US)
-or
-[GCASH](https://github.com/smoochiee/Ble-jammer/blob/main/GCash-MyQR-16032024181536.PNG.jpg)
+```
+Specter/
+├── assets/
+│   ├── lg.png               ← Project logo
+│   └── nrf24l01.jpg         ← Component image
+├── circuit-diagram/
+│   ├── main-c.d.png         ← Full circuit diagram
+│   └── ...
+├── specter-flash-ino/
+│   ├── esp1_worker.ino      ← Flash to ESP1
+│   ├── esp2_controller.ino  ← Flash to ESP2
+│   └── other-menu/
+│       └── jammer.ino       ← Original JR.IO code (more.ino)
+├── specter/flash-code/
+│   ├── esp32-no1.ino
+│   └── esp32-no2.ino
+└── README.md
+```
 
+---
 
-<a href="https://www.buymeacoffee.com/smoochiee"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=smoochiee&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff" /></a>
+## How It Works — Architecture
 
+```
+┌─────────────────────────────┐       UART        ┌─────────────────────────────┐
+│         ESP2 (UI)           │ ◄────────────────► │        ESP1 (Worker)        │
+│                             │  TX=32 ↔ RX=32     │                             │
+│  • 0.96" OLED Display       │  TX=17 ↔ RX=17     │  • NRF24 #1 — HSPI          │
+│  • Button UP   (GPIO25)     │                    │  • NRF24 #2 — VSPI          │
+│  • Button DOWN (GPIO27)     │  Commands ───────► │  • WiFi Scanner             │
+│  • Button MID  (GPIO26)     │  Results  ◄─────── │  • BLE Scanner              │
+│  • NUKRAX glitch animation  │                    │  • JR.IO Disruptor          │
+│  • Menu system              │                    │  • Alert Broadcasting        │
+│  • Result display           │                    │  • Slide Switch (GPIO33)    │
+└─────────────────────────────┘                    └─────────────────────────────┘
+```
 
+**ESP2** is the brain for UI — it receives button input, renders every screen, and sends commands over UART.
 
-# SPECIAL THANKS FOR DONATORS
-  * [ATOMNFT](https://github.com/ATOMNFT) - HEADER AND DONATIONS
-  * DONATIONS
-  * PARROTSTORE
-  * Sok Ponleu
-  * Philipp Simon
+**ESP1** is the RF worker — it executes every scan, runs JR.IO, and broadcasts alerts. Results are sent back to ESP2 for display.
+
+---
+
+## Technical Specifications
+
+| Parameter | Value |
+|---|---|
+| Microcontroller | ESP32-WROOM-32 (×2) |
+| CPU | Xtensa LX6 Dual-Core 240 MHz |
+| RF Modules | NRF24L01+PA/LNA (×2) |
+| RF Frequency | 2.400 – 2.525 GHz |
+| JR.IO TX Power | +20 dBm (PA/LNA amplified) |
+| BLE TX Power (Alert) | +9 dBm (maximum) |
+| WiFi TX Power (Alert) | 19.5 dBm (maximum) |
+| NRF Scan Channels | 126 (0–125) |
+| Display | SSD1306 128×64 OLED |
+| Communication | UART 115200 baud |
+| Power | 3.3V (via USB or external) |
+
+---
+
+## Support the Creator
+
+If you found this project useful or just think it's cool, you can support the development with a crypto donation. Every contribution helps fund more open-source projects like this one.
+
+<div align="center">
+
+### ❤️ Support @CosmoLanex
+
+**[👉 Donate via Crypto at cosmolanex.github.io/.cr/](https://cosmolanex.github.io/.cr/)**
+
+*Accepts multiple cryptocurrencies — no account needed*
+
+Your support keeps this project alive and helps build more open-source RF tools.
+
+---
+
+**If you can't donate, a ⭐ star on this repository means just as much.**
+
+</div>
+
+---
+
+## License
+
+```
+MIT License — Copyright (c) 2026 CosmoLanex
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+```
+
+---
+
+<div align="center">
+
+**SPECTER** · NUKRAX v3.0 · Developed by [@CosmoLanex](https://github.com/CosmoLanex)
+
+*Built with ⚡ on ESP32*
+
+</div>
