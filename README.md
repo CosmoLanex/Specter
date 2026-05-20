@@ -283,7 +283,7 @@ Specter/
 ## How It Works — Architecture
 
 ```
-┌─────────────────────────────┐       UART        ┌─────────────────────────────┐
+┌─────────────────────────────┐       UART         ┌─────────────────────────────┐
 │         ESP2 (UI)           │ ◄────────────────► │        ESP1 (Worker)        │
 │                             │  TX=32 ↔ RX=32     │                             │
 │  • 0.96" OLED Display       │  TX=17 ↔ RX=17     │  • NRF24 #1 — HSPI          │
@@ -291,7 +291,7 @@ Specter/
 │  • Button DOWN (GPIO27)     │  Commands ───────► │  • WiFi Scanner             │
 │  • Button MID  (GPIO26)     │  Results  ◄─────── │  • BLE Scanner              │
 │  • NUKRAX glitch animation  │                    │  • JR.IO Disruptor          │
-│  • Menu system              │                    │  • Alert Broadcasting        │
+│  • Menu system              │                    │  • Alert Broadcasting       │
 │  • Result display           │                    │  • Slide Switch (GPIO33)    │
 └─────────────────────────────┘                    └─────────────────────────────┘
 ```
