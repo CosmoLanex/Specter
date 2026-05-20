@@ -20,7 +20,6 @@
 #include <ezButton.h>
 #include "esp_bt.h"
 #include "esp_wifi.h"
-#include "esp_bluedroid_api.h"
 #include <WiFi.h>
 #include <BLEDevice.h>
 #include <BLEScan.h>
@@ -316,8 +315,11 @@ void startJrio() {
   stopAlerts();
   delay(100);
 
-  // Deinit BT and WiFi — exactly as original more.ino setup() sequence
-  esp_bt_controller_deinit();
+  // Properly deinit BLE through Arduino library so it can restart after JR.IO
+  // This calls esp_bt_controller_deinit() internally and resets the initialized flag
+  BLEDevice::deinit(false);
+
+  // Disable WiFi — exactly as original more.ino setup() sequence
   esp_wifi_stop();
   esp_wifi_deinit();
   esp_wifi_disconnect();
@@ -366,15 +368,9 @@ void stopJrio() {
   WiFi.disconnect(true);
   delay(300);
 
-  // Re-initialize BLE controller from scratch
-  // Required because esp_bt_controller_deinit() was called in startJrio()
-  esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
-  esp_bt_controller_init(&bt_cfg);
-  esp_bt_controller_enable(ESP_BT_MODE_BLE);
-  esp_bluedroid_init();
-  esp_bluedroid_enable();
-
-  // Re-attach Arduino BLE scan layer
+  // Re-initialize BLE — BLEDevice::deinit() was called in startJrio()
+  // so initialized flag is false, BLEDevice::init() will fully restart BLE
+  BLEDevice::init("ESP1-NukraxWorker");
   pScan = BLEDevice::getScan();
   pScan->setAdvertisedDeviceCallbacks(new BLECb(), true);
   pScan->setActiveScan(true);
