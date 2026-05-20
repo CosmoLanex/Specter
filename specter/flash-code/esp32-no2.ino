@@ -243,8 +243,12 @@ void parseResponse(){
     }
 
     case RESP_OK:
+      // Alert broadcast confirmed active by ESP1.
+      // Only set the flag — do NOT force st here.
+      // launchAlert() already set st=ST_ALERT_ACTIVE.
+      // JR.IO and stop-alert do NOT send RESP_OK, so this
+      // will never fire incorrectly for those commands.
       alertActive=true;
-      st=ST_ALERT_ACTIVE;
       break;
   }
 }
