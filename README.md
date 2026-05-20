@@ -23,6 +23,8 @@
 
 ---
 
+ **WARNING!!! JAMMING IS ILLEGAL**
+
 ## ⚠️ Disclaimer
 
 This project is developed for **educational and research purposes only**. The RF disruption feature (JR.IO) transmits a constant 2.4 GHz carrier wave and may interfere with WiFi, Bluetooth, and other 2.4 GHz communications in the vicinity. Usage of such functionality may be **regulated or illegal in your jurisdiction**. The developer assumes no responsibility for misuse. Always operate within the bounds of your local laws and regulations.
