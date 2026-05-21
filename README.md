@@ -2,7 +2,7 @@
 
 <img src="https://github.com/CosmoLanex/Specter/blob/main/assets/lg.png?raw=true" width="600"/>
 
-# SPECTER
+
 ### 2.4 GHz RF Intelligence System
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
