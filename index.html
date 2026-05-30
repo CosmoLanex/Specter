@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SPECTER — NUKRAX v3.0 Dual-ESP32 RF Intelligence System">
+<meta name="color-scheme" content="dark">
+<title>SPECTER — NUKRAX RF System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --black:  #000000;
+    --white:  #ffffff;
+    --grey:   #9a9a9a;
+    --dark:   #4a4a4a;
+    --card:   rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.08);
+    --mono:   'Courier New', monospace;
+    --sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    overflow-x: hidden;
+  }
+
+  /* ── 3D Canvas background ── */
+  #bg-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* All content above canvas */
+  nav, main, footer { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 20px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 13px; letter-spacing: 5px;
+    color: var(--white); font-weight: 700;
+  }
+  .nav-links { display: flex; align-items: center; gap: 36px; }
+  .nav-links a {
+    font-size: 11px; letter-spacing: 1px;
+    color: var(--grey); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    padding: 9px 22px;
+    background: var(--white); color: var(--black);
+    font-size: 11px; letter-spacing: 2px; font-weight: 700;
+    text-decoration: none; font-family: var(--mono);
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: #e0e0e0; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 140px 24px 80px;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--dark); margin-bottom: 28px;
+    text-transform: uppercase;
+    border: 1px solid var(--dark);
+    display: inline-block; padding: 6px 16px;
+  }
+  .hero-title {
+    font-size: clamp(56px, 11vw, 120px);
+    font-weight: 800; letter-spacing: 0.12em;
+    color: var(--white); line-height: 0.95;
+    margin-bottom: 8px;
+  }
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: clamp(10px, 1.5vw, 13px);
+    letter-spacing: 6px; color: var(--dark);
+    margin-bottom: 28px; text-transform: uppercase;
+  }
+  .hero-line {
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, var(--white), transparent);
+    margin: 0 auto 28px;
+  }
+  .hero-desc {
+    max-width: 480px;
+    font-size: 14px; line-height: 1.8;
+    color: var(--grey); margin-bottom: 48px;
+    font-weight: 300;
+  }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .btn-fill {
+    padding: 14px 36px;
+    background: var(--white); color: var(--black);
+    font-size: 11px; letter-spacing: 2px; font-weight: 700;
+    text-decoration: none; font-family: var(--mono);
+    transition: all 0.2s;
+  }
+  .btn-fill:hover { background: #e0e0e0; transform: translateY(-2px); }
+  .btn-stroke {
+    padding: 14px 36px;
+    background: transparent; color: var(--white);
+    border: 1px solid var(--dark);
+    font-size: 11px; letter-spacing: 2px;
+    text-decoration: none; font-family: var(--mono);
+    transition: all 0.2s;
+  }
+  .btn-stroke:hover { border-color: var(--white); }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 100px 48px;
+    max-width: 1080px; margin: 0 auto;
+  }
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 9px; letter-spacing: 5px;
+    color: var(--dark); text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700; color: var(--white);
+    letter-spacing: -0.5px; margin-bottom: 56px;
+    line-height: 1.15;
+  }
+  .section-title em { color: var(--grey); font-style: normal; }
+
+  .divider {
+    width: 100%; height: 1px; max-width: 1080px; margin: 0 auto;
+    background: var(--border);
+  }
+
+  /* ── FEATURE CARDS ── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px; background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .feature-card {
+    background: var(--black);
+    padding: 36px 32px;
+    transition: background 0.2s;
+  }
+  .feature-card:hover { background: rgba(255,255,255,0.02); }
+  .feature-num {
+    font-family: var(--mono);
+    font-size: 10px; color: var(--dark);
+    letter-spacing: 2px; margin-bottom: 24px;
+  }
+  .feature-name {
+    font-size: 18px; font-weight: 600;
+    color: var(--white); margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+  .feature-desc {
+    font-size: 13px; line-height: 1.75;
+    color: var(--grey); font-weight: 300;
+  }
+  .feature-tag {
+    display: inline-block; margin-top: 20px;
+    font-family: var(--mono); font-size: 8px;
+    letter-spacing: 2px; padding: 4px 10px;
+    border: 1px solid var(--dark); color: var(--dark);
+    text-transform: uppercase;
+  }
+
+  /* ── JR.IO HERO SECTION ── */
+  .jrio-block {
+    padding: 60px; border: 1px solid var(--border);
+    margin-bottom: 2px;
+    display: flex; gap: 60px;
+    align-items: flex-start; flex-wrap: wrap;
+    background: rgba(255,255,255,0.01);
+  }
+  .jrio-num {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 4px; color: var(--dark);
+    margin-bottom: 12px; text-transform: uppercase;
+  }
+  .jrio-title {
+    font-size: 72px; font-weight: 800;
+    color: var(--white); letter-spacing: 8px;
+    line-height: 1; margin-bottom: 20px;
+  }
+  .jrio-desc {
+    font-size: 14px; line-height: 1.8;
+    color: var(--grey); max-width: 380px;
+    font-weight: 300;
+  }
+  .jrio-specs { display: flex; flex-direction: column; gap: 16px; }
+  .spec-row {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .spec-k {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 2px; color: var(--dark);
+    text-transform: uppercase; width: 110px; flex-shrink: 0;
+  }
+  .spec-v {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 1px; color: var(--white);
+  }
+
+  /* ── HARDWARE TABLE ── */
+  .hw-table { width: 100%; border-collapse: collapse; }
+  .hw-table thead th {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 3px; text-align: left;
+    padding: 12px 16px; color: var(--dark);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase;
+  }
+  .hw-table tbody td {
+    padding: 14px 16px; font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--grey); font-weight: 300;
+  }
+  .hw-table tbody td:first-child { color: var(--white); font-weight: 500; }
+  .hw-table tbody td:last-child {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--dark); letter-spacing: 1px;
+  }
+  .hw-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── CIRCUIT ── */
+  .circuit-img-wrap {
+    border: 1px solid var(--border);
+    overflow: hidden; position: relative;
+  }
+  .circuit-img-wrap img {
+    width: 100%; display: block;
+    filter: brightness(0.85) contrast(1.1) grayscale(0.2);
+    transition: filter 0.3s;
+  }
+  .circuit-img-wrap:hover img { filter: brightness(0.95) contrast(1.1); }
+  .circuit-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.8);
+  }
+  .circuit-footer span {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 2px; color: var(--dark);
+  }
+  .circuit-footer a {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 2px; color: var(--white);
+    text-decoration: none; border-bottom: 1px solid var(--dark);
+    padding-bottom: 1px; transition: border-color 0.2s;
+  }
+  .circuit-footer a:hover { border-color: var(--white); }
+
+  /* ── PIN TABLES ── */
+  .pin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+  .pin-box { border: 1px solid var(--border); }
+  .pin-box-title {
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 3px; color: var(--dark); text-transform: uppercase;
+  }
+  .pin-row {
+    display: flex; padding: 9px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 11px;
+  }
+  .pin-row:last-child { border-bottom: none; }
+  .pin-num {
+    font-family: var(--mono); color: var(--white);
+    font-size: 10px; width: 70px; flex-shrink: 0;
+  }
+  .pin-desc { color: var(--grey); font-size: 11px; }
+
+  /* ── STEPS ── */
+  .steps-list { display: flex; flex-direction: column; gap: 0; }
+  .step-item {
+    display: flex; gap: 32px;
+    padding: 28px 0; border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .step-item:first-child { padding-top: 0; }
+  .step-n {
+    font-family: var(--mono); font-size: 11px;
+    color: var(--dark); flex-shrink: 0; width: 28px;
+    padding-top: 2px;
+  }
+  .step-body {}
+  .step-title {
+    font-size: 15px; font-weight: 600;
+    color: var(--white); margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 13px; line-height: 1.75;
+    color: var(--grey); font-weight: 300;
+  }
+  code {
+    font-family: var(--mono); font-size: 11px;
+    background: rgba(255,255,255,0.06);
+    padding: 2px 6px; color: var(--white);
+  }
+
+  /* ── SUPPORT ── */
+  #support {
+    text-align: center; padding: 120px 48px;
+    border-top: 1px solid var(--border);
+  }
+  .support-eyebrow {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 4px; color: var(--dark);
+    margin-bottom: 20px; text-transform: uppercase;
+  }
+  .support-title {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 700; color: var(--white);
+    margin-bottom: 16px; letter-spacing: -0.3px;
+  }
+  .support-desc {
+    font-size: 14px; color: var(--grey);
+    max-width: 400px; margin: 0 auto 40px;
+    line-height: 1.75; font-weight: 300;
+  }
+  .support-link {
+    padding: 16px 48px;
+    border: 1px solid var(--white); color: var(--white);
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 3px; text-decoration: none;
+    transition: all 0.2s; display: inline-block;
+  }
+  .support-link:hover {
+    background: var(--white); color: var(--black);
+  }
+  .support-star {
+    margin-top: 20px; font-size: 12px;
+    color: var(--dark); font-family: var(--mono);
+    letter-spacing: 1px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 28px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 12px;
+    font-size: 11px; color: var(--dark);
+    font-family: var(--mono); letter-spacing: 1px;
+  }
+  footer a { color: var(--dark); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--white); }
+  .footer-links { display: flex; gap: 24px; }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .section { padding: 70px 24px; }
+    .jrio-block { padding: 32px 24px; gap: 32px; }
+    .jrio-title { font-size: 52px; }
+    .pin-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; text-align: center; }
+    #support { padding: 80px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 3D Background -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">SPECTER</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#hardware">Hardware</a>
+    <a href="#circuit">Circuit</a>
+    <a href="#install">Install</a>
+    <a href="#support">Support</a>
+    <a href="flash/" class="nav-cta">FLASH DEVICE</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<main>
+<section id="hero">
+  <div class="hero-tag">Dual-ESP32 · RF Intelligence · v3.0</div>
+  <h1 class="hero-title">NUKRAX</h1>
+  <div class="hero-sub">Specter System</div>
+  <div class="hero-line"></div>
+  <p class="hero-desc">
+    A self-contained RF intelligence platform. Scan WiFi, BLE and the full
+    2.4 GHz spectrum. Broadcast alerts to nearby devices. Run JR.IO — a dual-radio
+    2.4 GHz disruptor at maximum power.
+  </p>
+  <div class="hero-btns">
+    <a href="flash/" class="btn-fill">Flash Firmware</a>
+    <a href="https://github.com/CosmoLanex/Specter" class="btn-stroke" target="_blank">GitHub →</a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-tag">Capabilities</div>
+  <div class="section-title">What it <em>does</em></div>
+
+  <!-- JR.IO block -->
+  <div class="jrio-block">
+    <div>
+      <div class="jrio-num">Primary System</div>
+      <div class="jrio-title">JR.IO</div>
+      <p class="jrio-desc">
+        Both NRF24L01+PA/LNA modules output a continuous unmodulated
+        2.4 GHz carrier at maximum power. Slide switch selects mode live.
+        Zero-delay tight loop for maximum efficiency.
+      </p>
+    </div>
+    <div class="jrio-specs">
+      <div class="spec-row"><span class="spec-k">TX Power</span><span class="spec-v">+20 dBm (PA/LNA)</span></div>
+      <div class="spec-row"><span class="spec-k">SW High</span><span class="spec-v">Staggered sweep mode</span></div>
+      <div class="spec-row"><span class="spec-k">SW Low</span><span class="spec-v">Random hop ~60 µs</span></div>
+      <div class="spec-row"><span class="spec-k">Radios</span><span class="spec-v">2× NRF24 simultaneous</span></div>
+      <div class="spec-row"><span class="spec-k">Channels</span><span class="spec-v">0 – 79 (full band)</span></div>
+      <div class="spec-row"><span class="spec-k">Control</span><span class="spec-v">Slide switch on ESP1</span></div>
+    </div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-num">01</div>
+      <div class="feature-name">WiFi Scanner</div>
+      <p class="feature-desc">Scans all nearby networks including hidden SSIDs. Shows SSID, channel, RSSI, BSSID and encryption status. Sorted by signal strength.</p>
+      <span class="feature-tag">802.11 B/G/N</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">02</div>
+      <div class="feature-name">BLE Scanner</div>
+      <p class="feature-desc">6-second passive BLE advertisement scan. Displays device name, MAC address and RSSI. Identifies unnamed advertisement-only devices.</p>
+      <span class="feature-tag">BLE 4.x / 5.x</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">03</div>
+      <div class="feature-name">2.4 GHz Spectrum</div>
+      <p class="feature-desc">Both NRF24 radios sweep simultaneously. Full 126-channel band visualised as a bar graph on the OLED. WiFi channels 1, 6, 11 marked.</p>
+      <span class="feature-tag">126 Channels</span>
+    </div>
+    <div class="feature-card">
+      <div class="feature-num">04</div>
+      <div class="feature-name">Proximity Alerts</div>
+      <p class="feature-desc">Broadcasts custom messages to all nearby devices with no connection required. WiFi SSID blast, BLE beacon, or both simultaneously at max TX power.</p>
+      <span class="feature-tag">No Connection Needed</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HARDWARE -->
+<section class="section" id="hardware">
+  <div class="section-tag">Bill of Materials</div>
+  <div class="section-title">What you <em>need</em></div>
+  <table class="hw-table">
+    <thead>
+      <tr>
+        <th>Component</th>
+        <th>Details</th>
+        <th>Notes</th>
+        <th>Qty</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>ESP32-WROOM-32</td><td>Dual-core 240 MHz, WiFi + BLE built-in</td><td>Any standard 38-pin dev board</td><td>× 2</td></tr>
+      <tr><td>NRF24L01+PA/LNA</td><td>+20 dBm TX, external antenna</td><td>Must be PA/LNA version</td><td>× 2</td></tr>
+      <tr><td>0.96" OLED SSD1306</td><td>128×64 I2C 4-pin, SDA=GPIO4 SCL=GPIO5</td><td>Blue or white, both work</td><td>× 1</td></tr>
+      <tr><td>Push Button 6×6mm</td><td>UP · DOWN · MIDDLE tactile</td><td>Active-LOW with pull-up</td><td>× 3</td></tr>
+      <tr><td>Slide Switch 3-pin</td><td>JR.IO mode select, GPIO33 on ESP1</td><td>middle=GND · right=GPIO33</td><td>× 1</td></tr>
+      <tr><td>100µF Capacitor</td><td>Electrolytic, VCC/GND decoupling</td><td>One per NRF24 module</td><td>× 2</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- CIRCUIT -->
+<section class="section" id="circuit">
+  <div class="section-tag">Wiring</div>
+  <div class="section-title">Circuit <em>diagram</em></div>
+
+  <div class="circuit-img-wrap">
+    <img src="https://raw.githubusercontent.com/CosmoLanex/Specter/main/circuit-diagram/main-c.d.png"
+         alt="Specter Circuit Diagram" loading="lazy" />
+    <div class="circuit-footer">
+      <span>SPECTER · CIRCUIT DIAGRAM · v3.0</span>
+      <a href="https://app.cirkitdesigner.com/project/870d9182-9367-47eb-bef0-2a379b8e2756" target="_blank">
+        Open interactive diagram →
+      </a>
+    </div>
+  </div>
+
+  <div class="pin-grid">
+    <div class="pin-box">
+      <div class="pin-box-title">ESP1 — NRF Worker</div>
+      <div class="pin-row"><span class="pin-num">GPIO 14</span><span class="pin-desc">NRF#1 SCK (HSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 12</span><span class="pin-desc">NRF#1 MISO (HSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 13</span><span class="pin-desc">NRF#1 MOSI (HSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 15</span><span class="pin-desc">NRF#1 CS</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 16</span><span class="pin-desc">NRF#1 CE</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 18</span><span class="pin-desc">NRF#2 SCK (VSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 19</span><span class="pin-desc">NRF#2 MISO (VSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 23</span><span class="pin-desc">NRF#2 MOSI (VSPI)</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 21</span><span class="pin-desc">NRF#2 CS</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 22</span><span class="pin-desc">NRF#2 CE</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 33</span><span class="pin-desc">Slide switch</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 17</span><span class="pin-desc">UART TX → ESP2</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 32</span><span class="pin-desc">UART RX ← ESP2</span></div>
+    </div>
+    <div class="pin-box">
+      <div class="pin-box-title">ESP2 — UI Controller</div>
+      <div class="pin-row"><span class="pin-num">GPIO 4</span><span class="pin-desc">OLED SDA</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 5</span><span class="pin-desc">OLED SCL</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 25</span><span class="pin-desc">Button UP</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 27</span><span class="pin-desc">Button DOWN</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 26</span><span class="pin-desc">Button MIDDLE</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 32</span><span class="pin-desc">UART TX → ESP1</span></div>
+      <div class="pin-row"><span class="pin-num">GPIO 17</span><span class="pin-desc">UART RX ← ESP1</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INSTALL -->
+<section class="section" id="install">
+  <div class="section-tag">Quick Start</div>
+  <div class="section-title">Get <em>running</em></div>
+  <div class="steps-list">
+    <div class="step-item">
+      <div class="step-n">01</div>
+      <div class="step-body">
+        <div class="step-title">Assemble hardware</div>
+        <p class="step-desc">Wire both ESP32s per the circuit diagram. Connect OLED (SDA=4, SCL=5) and three buttons to ESP2. Connect NRF24 modules and slide switch to ESP1. Add 100µF caps to each NRF24 VCC/GND.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-n">02</div>
+      <div class="step-body">
+        <div class="step-title">Flash firmware</div>
+        <p class="step-desc">Connect ESP1 via USB. Open <a href="flash/" style="color:var(--white)">the flash page</a> in Chrome or Edge. Click <strong>Install ESP1</strong>. Disconnect, connect ESP2, click <strong>Install ESP2</strong>. No Arduino IDE needed.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-n">03</div>
+      <div class="step-body">
+        <div class="step-title">Wire UART</div>
+        <p class="step-desc">Cross-connect: <code>ESP1 TX(17) → ESP2 RX(17)</code> and <code>ESP2 TX(32) → ESP1 RX(32)</code>. Connect a shared GND between both boards. This is mandatory.</p>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-n">04</div>
+      <div class="step-body">
+        <div class="step-title">Power on</div>
+        <p class="step-desc">Power both ESPs. The OLED shows the NUKRAX glitch animation for ~4 seconds then the main menu. JR.IO is at the top. Use UP/DOWN to navigate, MIDDLE to select.</p>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:40px;">
+    <a href="flash/" class="btn-fill">Go to Flash Page</a>
+  </div>
+</section>
+
+<!-- SUPPORT -->
+<section id="support">
+  <div class="support-eyebrow">Creator</div>
+  <h2 class="support-title">Support @CosmoLanex</h2>
+  <p class="support-desc">
+    If this project was useful to you, consider supporting the development.
+    Accepts multiple cryptocurrencies — no account needed.
+  </p>
+  <a href="https://cosmolanex.github.io/.cr/" class="support-link" target="_blank">
+    Donate via Crypto
+  </a>
+  <p class="support-star">or ★ star the repository on GitHub</p>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>SPECTER · NUKRAX v3.0 · © 2026 <a href="https://github.com/CosmoLanex" target="_blank">@CosmoLanex</a></div>
+  <div class="footer-links">
+    <a href="https://github.com/CosmoLanex/Specter" target="_blank">GitHub</a>
+    <a href="flash/">Flash</a>
+    <a href="https://cosmolanex.github.io/.cr/" target="_blank">Donate</a>
+  </div>
+  <div>MIT License · Open Source</div>
+</footer>
+
+<!-- THREE.JS 3D BACKGROUND -->
+<script>
+(function() {
+  const canvas  = document.getElementById('bg-canvas');
+  const W = window.innerWidth, H = window.innerHeight;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, W / H, 0.1, 1000);
+  camera.position.z = 55;
+
+  // ── Particles ──────────────────────────────────────────────
+  const COUNT = 120;
+  const positions = new Float32Array(COUNT * 3);
+  const particleData = [];
+
+  for (let i = 0; i < COUNT; i++) {
+    const x = (Math.random() - 0.5) * 100;
+    const y = (Math.random() - 0.5) * 100;
+    const z = (Math.random() - 0.5) * 60;
+    positions[i * 3]     = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    particleData.push({
+      x, y, z,
+      vx: (Math.random() - 0.5) * 0.04,
+      vy: (Math.random() - 0.5) * 0.04,
+      vz: (Math.random() - 0.5) * 0.02,
+    });
+  }
+
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const pMat = new THREE.PointsMaterial({
+    color: 0xffffff, size: 0.45,
+    transparent: true, opacity: 0.55,
+    sizeAttenuation: true,
+  });
+  const points = new THREE.Points(pGeo, pMat);
+  scene.add(points);
+
+  // ── Lines ──────────────────────────────────────────────────
+  const MAX_CONNECTIONS = 300;
+  const linePositions   = new Float32Array(MAX_CONNECTIONS * 6);
+  const lGeo = new THREE.BufferGeometry();
+  lGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+  lGeo.setDrawRange(0, 0);
+  const lMat = new THREE.LineBasicMaterial({
+    color: 0x4a4a4a,
+    transparent: true,
+    opacity: 0.5,
+  });
+  const lines = new THREE.LineSegments(lGeo, lMat);
+  scene.add(lines);
+
+  // ── Animate ─────────────────────────────────────────────────
+  let t = 0;
+  const CONNECT_DIST = 18;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.003;
+
+    // Move particles
+    for (let i = 0; i < COUNT; i++) {
+      const d = particleData[i];
+      d.x += d.vx; d.y += d.vy; d.z += d.vz;
+      if (Math.abs(d.x) > 52) d.vx *= -1;
+      if (Math.abs(d.y) > 52) d.vy *= -1;
+      if (Math.abs(d.z) > 32) d.vz *= -1;
+      positions[i*3]   = d.x;
+      positions[i*3+1] = d.y;
+      positions[i*3+2] = d.z;
+    }
+    pGeo.attributes.position.needsUpdate = true;
+
+    // Build connection lines
+    let connIdx = 0;
+    for (let a = 0; a < COUNT && connIdx < MAX_CONNECTIONS; a++) {
+      for (let b = a + 1; b < COUNT && connIdx < MAX_CONNECTIONS; b++) {
+        const da = particleData[a], db = particleData[b];
+        const dx = da.x-db.x, dy = da.y-db.y, dz = da.z-db.z;
+        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        if (dist < CONNECT_DIST) {
+          linePositions[connIdx*6]   = da.x;
+          linePositions[connIdx*6+1] = da.y;
+          linePositions[connIdx*6+2] = da.z;
+          linePositions[connIdx*6+3] = db.x;
+          linePositions[connIdx*6+4] = db.y;
+          linePositions[connIdx*6+5] = db.z;
+          connIdx++;
+        }
+      }
+    }
+    lGeo.attributes.position.needsUpdate = true;
+    lGeo.setDrawRange(0, connIdx * 2);
+
+    // Slow camera drift
+    camera.position.x = Math.sin(t * 0.4) * 6;
+    camera.position.y = Math.cos(t * 0.3) * 4;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Resize
+  window.addEventListener('resize', () => {
+    const W = window.innerWidth, H = window.innerHeight;
+    renderer.setSize(W, H);
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+  });
+})();
+</script>
+</body>
+</html>
