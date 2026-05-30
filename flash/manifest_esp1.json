@@ -1,0 +1,17 @@
+{
+  "name": "SPECTER — ESP1 Worker v3.0",
+  "version": "3.0.0",
+  "home_assistant_domain": "esphome",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32",
+      "parts": [
+        {
+          "path": "firmware/esp1_worker.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

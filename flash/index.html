@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>SPECTER — Flash Firmware</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  :root {
+    --black:  #000000;
+    --white:  #ffffff;
+    --grey:   #9a9a9a;
+    --dark:   #4a4a4a;
+    --border: rgba(255,255,255,0.08);
+    --mono:   'Courier New', monospace;
+    --sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  #bg-canvas {
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
+    z-index: 0; pointer-events: none;
+  }
+  nav, main, footer { position: relative; z-index: 1; }
+
+  /* ── NAV ── */
+  nav {
+    padding: 20px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand {
+    font-family: var(--mono); font-size: 13px;
+    letter-spacing: 5px; color: var(--white); font-weight: 700;
+    text-decoration: none;
+  }
+  .nav-back {
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 2px; color: var(--dark);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--white); }
+
+  /* ── HEADER ── */
+  .page-header {
+    padding: 100px 48px 70px;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  }
+  .header-tag {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 5px; color: var(--dark);
+    text-transform: uppercase; margin-bottom: 20px;
+    display: inline-block; border: 1px solid var(--dark);
+    padding: 5px 14px;
+  }
+  .header-title {
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 700; color: var(--white);
+    letter-spacing: -0.5px; margin-bottom: 16px;
+  }
+  .header-desc {
+    font-size: 14px; color: var(--grey);
+    max-width: 460px; margin: 0 auto;
+    line-height: 1.75; font-weight: 300;
+  }
+
+  /* ── WARNING BANNER ── */
+  .banner {
+    margin: 0 48px 48px;
+    max-width: 860px; margin-left: auto; margin-right: auto;
+    padding: 18px 24px;
+    border: 1px solid var(--dark);
+    background: rgba(74,74,74,0.06);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .banner-icon { font-size: 16px; flex-shrink:0; margin-top:1px; }
+  .banner-text {
+    font-size: 12px; line-height: 1.75;
+    color: var(--grey); font-weight: 300;
+  }
+  .banner-text strong { color: var(--white); font-weight: 500; }
+
+  /* ── FLASH GRID ── */
+  .flash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 860px; margin: 0 auto;
+    padding: 0 48px 80px;
+  }
+  @media(max-width: 680px) {
+    .flash-grid { grid-template-columns: 1fr; padding: 0 24px 60px; }
+    nav { padding: 16px 24px; }
+    .page-header { padding: 80px 24px 50px; }
+    .banner { margin: 0 24px 32px; }
+  }
+
+  /* ── FLASH CARD ── */
+  .flash-card {
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.02);
+    padding: 36px 32px;
+    display: flex; flex-direction: column; gap: 24px;
+    transition: border-color 0.2s;
+  }
+  .flash-card:hover { border-color: var(--dark); }
+
+  .card-order {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 4px; color: var(--dark);
+    text-transform: uppercase;
+  }
+  .card-title {
+    font-size: 32px; font-weight: 700;
+    color: var(--white); letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .card-title span { color: var(--grey); }
+  .card-role {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 2px; color: var(--dark);
+    text-transform: uppercase;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Pin list */
+  .pin-list { display: flex; flex-direction: column; gap: 8px; }
+  .pin-row {
+    display: flex; gap: 12px; align-items: baseline;
+    font-size: 11px;
+  }
+  .pin-label {
+    font-family: var(--mono); color: var(--white);
+    font-size: 10px; width: 64px; flex-shrink: 0;
+  }
+  .pin-detail { color: var(--dark); font-size: 11px; }
+
+  /* ESP Web Tools button */
+  esp-web-install-button {
+    display: block; width: 100%;
+  }
+  esp-web-install-button::part(button) {
+    width: 100% !important;
+    padding: 15px 20px !important;
+    background: var(--white) !important;
+    color: var(--black) !important;
+    border: none !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 11px !important;
+    letter-spacing: 3px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+    transition: background 0.2s !important;
+  }
+  esp-web-install-button::part(button):hover {
+    background: #e0e0e0 !important;
+  }
+  .btn-unsupported {
+    width: 100%; padding: 15px;
+    background: transparent;
+    border: 1px solid var(--dark);
+    color: var(--dark);
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 2px; cursor: not-allowed;
+    text-align: center; text-transform: uppercase;
+  }
+
+  .card-note {
+    font-size: 11px; line-height: 1.7;
+    color: var(--dark); font-weight: 300;
+  }
+  code {
+    font-family: var(--mono); font-size: 10px;
+    background: rgba(255,255,255,0.05);
+    padding: 2px 5px; color: var(--grey);
+  }
+
+  /* ── HOW TO GET BIN FILES ── */
+  .bin-section {
+    max-width: 860px; margin: 0 auto;
+    padding: 0 48px 80px;
+    border-top: 1px solid var(--border);
+    padding-top: 48px;
+  }
+  .bin-title {
+    font-family: var(--mono); font-size: 9px;
+    letter-spacing: 5px; color: var(--dark);
+    text-transform: uppercase; margin-bottom: 28px;
+  }
+  .bin-steps { display: flex; flex-direction: column; gap: 0; }
+  .bin-step {
+    display: flex; gap: 24px; padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .bin-num {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--dark); flex-shrink: 0; width: 24px;
+    padding-top: 1px;
+  }
+  .bin-text {
+    font-size: 13px; line-height: 1.7;
+    color: var(--grey); font-weight: 300;
+  }
+  .bin-text strong { color: var(--white); font-weight: 500; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 48px;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 12px;
+    font-family: var(--mono); font-size: 10px;
+    letter-spacing: 1px; color: var(--dark);
+  }
+  footer a { color: var(--dark); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--white); }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="../" class="nav-brand">SPECTER</a>
+  <a href="../" class="nav-back">← Back to site</a>
+</nav>
+
+<main>
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-tag">Web Serial · Chrome & Edge Only</div>
+  <h1 class="header-title">Flash Firmware</h1>
+  <p class="header-desc">
+    Install SPECTER NUKRAX v3.0 directly from your browser.
+    Plug in your ESP32 via USB, click install, done.
+    No Arduino IDE required.
+  </p>
+</div>
+
+<!-- WARNING BANNER -->
+<div class="banner">
+  <div class="banner-icon">⚠</div>
+  <div class="banner-text">
+    <strong>Before you start —</strong>
+    Use <strong>Chrome</strong> or <strong>Edge</strong> browser only (Web Serial not supported in Firefox/Safari).
+    Connect your ESP32 via USB cable. Flash <strong>ESP1 first</strong>, then ESP2 separately.
+    If the button does not respond, install CP210x or CH340 USB drivers for your board.
+  </div>
+</div>
+
+<!-- FLASH CARDS -->
+<div class="flash-grid">
+
+  <!-- ESP1 -->
+  <div class="flash-card">
+    <div class="card-order">Flash First</div>
+    <div class="card-title">ESP<span>1</span></div>
+    <div class="card-role">NRF Worker · JR.IO Engine · RF Scanner</div>
+
+    <div class="pin-list">
+      <div class="pin-row"><span class="pin-label">NRF #1</span><span class="pin-detail">HSPI · SCK=14 MISO=12 MOSI=13 CS=15 CE=16</span></div>
+      <div class="pin-row"><span class="pin-label">NRF #2</span><span class="pin-detail">VSPI · SCK=18 MISO=19 MOSI=23 CS=21 CE=22</span></div>
+      <div class="pin-row"><span class="pin-label">Switch</span><span class="pin-detail">Slide switch GPIO33 — JR.IO mode</span></div>
+      <div class="pin-row"><span class="pin-label">UART</span><span class="pin-detail">TX=17 → ESP2 · RX=32 ← ESP2</span></div>
+    </div>
+
+    <esp-web-install-button manifest="manifest_esp1.json">
+      <div slot="unsupported" class="btn-unsupported">✗ Use Chrome or Edge browser</div>
+      <div slot="not-allowed" class="btn-unsupported">✗ Connect ESP32 via USB first</div>
+    </esp-web-install-button>
+
+    <p class="card-note">
+      After flashing, open Serial Monitor at <code>115200</code> baud.
+      Confirm <code>HP Started !!!</code> and <code>SP Started !!!</code> appear.
+    </p>
+  </div>
+
+  <!-- ESP2 -->
+  <div class="flash-card">
+    <div class="card-order">Flash Second</div>
+    <div class="card-title">ESP<span>2</span></div>
+    <div class="card-role">UI Controller · OLED Display · Buttons</div>
+
+    <div class="pin-list">
+      <div class="pin-row"><span class="pin-label">OLED</span><span class="pin-detail">SDA=GPIO4 · SCL=GPIO5 (I2C 4-pin)</span></div>
+      <div class="pin-row"><span class="pin-label">Button UP</span><span class="pin-detail">GPIO25 → GND</span></div>
+      <div class="pin-row"><span class="pin-label">Button DN</span><span class="pin-detail">GPIO27 → GND</span></div>
+      <div class="pin-row"><span class="pin-label">Button MID</span><span class="pin-detail">GPIO26 → GND</span></div>
+      <div class="pin-row"><span class="pin-label">UART</span><span class="pin-detail">TX=32 → ESP1 · RX=17 ← ESP1</span></div>
+    </div>
+
+    <esp-web-install-button manifest="manifest_esp2.json">
+      <div slot="unsupported" class="btn-unsupported">✗ Use Chrome or Edge browser</div>
+      <div slot="not-allowed" class="btn-unsupported">✗ Connect ESP32 via USB first</div>
+    </esp-web-install-button>
+
+    <p class="card-note">
+      After flashing the OLED shows the NUKRAX animation then the main menu.
+      JR.IO is at the top. UP/DOWN to navigate, MIDDLE to select.
+    </p>
+  </div>
+
+</div>
+
+<!-- HOW TO ADD .BIN FILES -->
+<div class="bin-section">
+  <div class="bin-title">How to add your compiled firmware</div>
+  <div class="bin-steps">
+    <div class="bin-step">
+      <div class="bin-num">01</div>
+      <div class="bin-text">Open <strong>Arduino IDE</strong> with <code>esp1_worker.ino</code>. Set board to <strong>ESP32 Dev Module</strong>. Set partition to <strong>Huge APP (3MB No OTA)</strong>.</div>
+    </div>
+    <div class="bin-step">
+      <div class="bin-num">02</div>
+      <div class="bin-text">Click <strong>Sketch → Export Compiled Binary</strong>. Find the file ending in <code>.merged.bin</code> in your sketch folder. Rename it to <code>esp1_worker.bin</code>.</div>
+    </div>
+    <div class="bin-step">
+      <div class="bin-num">03</div>
+      <div class="bin-text">Repeat for <code>esp2_controller.ino</code>. No special partition needed. Export → rename to <code>esp2_controller.bin</code>.</div>
+    </div>
+    <div class="bin-step">
+      <div class="bin-num">04</div>
+      <div class="bin-text">Upload both <code>.bin</code> files to the <code>flash/firmware/</code> folder in your GitHub repo. The flash buttons above will work immediately.</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div>SPECTER · NUKRAX v3.0 · <a href="https://github.com/CosmoLanex" target="_blank">@CosmoLanex</a></div>
+  <div><a href="https://cosmolanex.github.io/.cr/" target="_blank">Support the creator</a></div>
+  <div><a href="../">← Main site</a></div>
+</footer>
+
+<!-- 3D BACKGROUND -->
+<script>
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const W = window.innerWidth, H = window.innerHeight;
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 0);
+  const scene  = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(70, W/H, 0.1, 1000);
+  camera.position.z = 55;
+
+  const COUNT = 100;
+  const positions = new Float32Array(COUNT * 3);
+  const data = [];
+  for (let i = 0; i < COUNT; i++) {
+    const x = (Math.random()-.5)*100, y = (Math.random()-.5)*100, z = (Math.random()-.5)*60;
+    positions[i*3]=x; positions[i*3+1]=y; positions[i*3+2]=z;
+    data.push({ x,y,z, vx:(Math.random()-.5)*.035, vy:(Math.random()-.5)*.035, vz:(Math.random()-.5)*.02 });
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  scene.add(new THREE.Points(pGeo, new THREE.PointsMaterial({ color:0xffffff, size:0.4, transparent:true, opacity:0.5 })));
+
+  const MAX = 280;
+  const lPos = new Float32Array(MAX * 6);
+  const lGeo = new THREE.BufferGeometry();
+  lGeo.setAttribute('position', new THREE.BufferAttribute(lPos, 3));
+  lGeo.setDrawRange(0,0);
+  const lines = new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({ color:0x4a4a4a, transparent:true, opacity:0.45 }));
+  scene.add(lines);
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.003;
+    for (let i=0;i<COUNT;i++) {
+      const d=data[i];
+      d.x+=d.vx; d.y+=d.vy; d.z+=d.vz;
+      if(Math.abs(d.x)>52) d.vx*=-1;
+      if(Math.abs(d.y)>52) d.vy*=-1;
+      if(Math.abs(d.z)>32) d.vz*=-1;
+      positions[i*3]=d.x; positions[i*3+1]=d.y; positions[i*3+2]=d.z;
+    }
+    pGeo.attributes.position.needsUpdate = true;
+    let ci=0;
+    for(let a=0;a<COUNT&&ci<MAX;a++)
+      for(let b=a+1;b<COUNT&&ci<MAX;b++){
+        const da=data[a],db=data[b];
+        const dx=da.x-db.x,dy=da.y-db.y,dz=da.z-db.z;
+        if(dx*dx+dy*dy+dz*dz < 18*18){
+          lPos[ci*6]=da.x;lPos[ci*6+1]=da.y;lPos[ci*6+2]=da.z;
+          lPos[ci*6+3]=db.x;lPos[ci*6+4]=db.y;lPos[ci*6+5]=db.z;
+          ci++;
+        }
+      }
+    lGeo.attributes.position.needsUpdate=true;
+    lGeo.setDrawRange(0,ci*2);
+    camera.position.x=Math.sin(t*.4)*5;
+    camera.position.y=Math.cos(t*.3)*3;
+    camera.lookAt(scene.position);
+    renderer.render(scene,camera);
+  }
+  animate();
+  window.addEventListener('resize',()=>{
+    const W=window.innerWidth,H=window.innerHeight;
+    renderer.setSize(W,H); camera.aspect=W/H; camera.updateProjectionMatrix();
+  });
+})();
+</script>
+</body>
+</html>
